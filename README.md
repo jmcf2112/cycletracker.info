@@ -1,2 +1,2 @@
 # cycletracker.info
-Tracking the female menstrual Cycle Throughout all it stages of your life.
+Tracking the female menstrual cycle throughout all its stages in your life.
