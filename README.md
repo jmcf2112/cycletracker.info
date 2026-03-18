@@ -1,2 +1,2 @@
 # cycletracker.info
-Changing the female menstrual Throughout all stages of life
+Tracking the female menstrual Cycle Throughout all it stages of your life.
