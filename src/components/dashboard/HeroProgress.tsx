@@ -14,76 +14,66 @@ export function HeroProgress({ currentDay, prediction, inPeriod }: HeroProgressP
   const isLuteal = currentDay && currentDay > 16;
 
   let phaseName = 'Unknown Phase';
-  let ringColor = 'text-primary';
+  let ringColor = 'hsl(var(--primary))'; // Default to primary pink
+  let textColor = 'text-primary';
   
   if (!currentDay) {
     phaseName = 'No Data';
-    ringColor = 'text-muted-foreground';
+    ringColor = 'hsl(var(--muted))';
+    textColor = 'text-muted-foreground';
   } else if (isMenstrual) {
     phaseName = 'Menstrual Phase';
-    ringColor = 'text-primary';
+    ringColor = 'hsl(var(--primary))'; // Pink
+    textColor = 'text-primary';
   } else if (isFollicular) {
     phaseName = 'Follicular Phase';
-    ringColor = 'text-teal-400';
+    ringColor = '#2dd4bf'; // Teal
+    textColor = 'text-teal-400';
   } else if (isOvulatory) {
     phaseName = 'Ovulatory Phase';
-    ringColor = 'text-amber-400';
+    ringColor = '#fbbf24'; // Amber
+    textColor = 'text-amber-400';
   } else if (isLuteal) {
     phaseName = 'Luteal Phase';
-    ringColor = 'text-purple-400';
+    ringColor = '#c084fc'; // Purple
+    textColor = 'text-purple-400';
   }
 
   const progressPercent = currentDay ? Math.min((currentDay / 28) * 100, 100) : 0;
   
-  // SVG Circle calculations
-  const radius = 130;
-  const strokeWidth = 20;
-  const center = 160;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
+  // Create a stunning, glossy conic gradient
+  const conicStyle = currentDay ? {
+    background: `conic-gradient(${ringColor} ${progressPercent}%, hsl(var(--muted)/0.3) 0%)`
+  } : { background: 'hsl(var(--muted)/0.3)' };
 
   return (
-    <Card className="border-none shadow-none bg-transparent">
-      <CardContent className="flex flex-col items-center justify-center p-4 sm:p-6">
-        <div className="relative w-[320px] h-[320px] flex items-center justify-center">
+    <Card className="border-none shadow-none bg-transparent pt-4">
+      <CardContent className="flex flex-col items-center justify-center p-0 sm:p-4">
+        
+        {/* The Pretty Donut Ring */}
+        <div className="relative w-[300px] h-[300px] rounded-full flex items-center justify-center shadow-[0_0_50px_-15px_rgba(0,0,0,0.5)] transition-all duration-1000 ease-in-out" 
+             style={conicStyle}>
           
-          {/* Beautiful SVG Progress Ring */}
-          <svg className="absolute inset-0 w-full h-full -rotate-90 filter drop-shadow-md">
-            {/* Background Track */}
-            <circle
-              cx={center}
-              cy={center}
-              r={radius}
-              fill="transparent"
-              stroke="currentColor"
-              strokeWidth={strokeWidth}
-              className="text-muted/30"
-            />
-            {/* Foreground Animated Progress */}
-            <circle
-              cx={center}
-              cy={center}
-              r={radius}
-              fill="transparent"
-              stroke="currentColor"
-              strokeWidth={strokeWidth}
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              strokeDashoffset={strokeDashoffset}
-              className={`${ringColor} transition-all duration-1000 ease-out`}
-            />
-          </svg>
-
-          {/* Inner Glow Center Element */}
-          <div className="absolute inset-0 m-auto w-[220px] h-[220px] rounded-full bg-card/80 backdrop-blur-sm shadow-[0_0_40px_-10px_rgba(0,0,0,0.3)] border border-border/50 flex flex-col items-center justify-center z-30">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Cycle Day</p>
-            <h2 className="text-7xl font-serif font-semibold text-foreground tracking-tighter mb-1 filter drop-shadow-sm">{currentDay || '—'}</h2>
-            <p className={`text-sm font-medium ${ringColor}`}>{phaseName}</p>
+          {/* Inner Hole (creates the donut) */}
+          <div className="w-[260px] h-[260px] rounded-full bg-[#0a0a0a] border-[8px] border-[#0a0a0a] shadow-inner flex flex-col items-center justify-center z-10 relative overflow-hidden">
+            
+            {/* Soft background glow based on phase color */}
+            <div className="absolute inset-0 opacity-20 blur-3xl" style={{ backgroundColor: ringColor }} />
+            
+            {/* Center Content */}
+            <div className="relative z-20 flex flex-col items-center justify-center">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.2em] mb-2 drop-shadow-sm">Cycle Day</p>
+              <h2 className="text-8xl font-serif font-semibold text-white tracking-tighter mb-2 filter drop-shadow-md">{currentDay || '—'}</h2>
+              <p className={`text-base font-semibold ${textColor} tracking-wide`}>{phaseName}</p>
+            </div>
           </div>
+          
+          {/* Subtle outer glass ring */}
+          <div className="absolute inset-0 rounded-full border border-white/5 pointer-events-none" />
         </div>
 
         {/* Legend */}
-        <div className="flex gap-4 mt-10 flex-wrap justify-center bg-card shadow-sm px-6 py-3 rounded-full border border-border">
+        <div className="flex gap-5 mt-12 flex-wrap justify-center bg-[#111] shadow-xl px-8 py-4 rounded-full border border-white/5">
           <LegendItem color="bg-primary" label="Menstrual" />
           <LegendItem color="bg-teal-400" label="Follicular" />
           <LegendItem color="bg-amber-400" label="Ovulatory" />
@@ -97,8 +87,8 @@ export function HeroProgress({ currentDay, prediction, inPeriod }: HeroProgressP
 function LegendItem({ color, label }: { color: string, label: string }) {
   return (
     <div className="flex items-center gap-2">
-      <div className={`w-3 h-3 rounded-full ${color} shadow-sm ring-1 ring-border/50`} />
-      <span className="text-xs text-foreground font-medium">{label}</span>
+      <div className={`w-3.5 h-3.5 rounded-full ${color} shadow-sm ring-2 ring-white/10`} />
+      <span className="text-xs text-zinc-300 font-medium tracking-wide">{label}</span>
     </div>
   );
 }
