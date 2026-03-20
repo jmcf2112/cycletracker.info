@@ -14,76 +14,76 @@ export function HeroProgress({ currentDay, prediction, inPeriod }: HeroProgressP
   const isLuteal = currentDay && currentDay > 16;
 
   let phaseName = 'Unknown Phase';
-  let ringColor = 'border-primary';
+  let ringColor = 'text-primary';
   
   if (!currentDay) {
     phaseName = 'No Data';
-    ringColor = 'border-muted';
+    ringColor = 'text-muted-foreground';
   } else if (isMenstrual) {
     phaseName = 'Menstrual Phase';
-    ringColor = 'border-primary';
+    ringColor = 'text-primary';
   } else if (isFollicular) {
     phaseName = 'Follicular Phase';
-    ringColor = 'border-teal-400';
+    ringColor = 'text-teal-400';
   } else if (isOvulatory) {
     phaseName = 'Ovulatory Phase';
-    ringColor = 'border-amber-400';
+    ringColor = 'text-amber-400';
   } else if (isLuteal) {
     phaseName = 'Luteal Phase';
-    ringColor = 'border-purple-400';
+    ringColor = 'text-purple-400';
   }
 
   const progressPercent = currentDay ? Math.min((currentDay / 28) * 100, 100) : 0;
   
-  // Create the conic gradient manually via style
-  // We use standard tailwind colors for the track, but need a custom conic for the progress
-  const conicStyle = currentDay ? {
-    background: `conic-gradient(currentColor ${progressPercent}%, transparent 0%)`
-  } : { background: 'transparent' };
+  // SVG Circle calculations
+  const radius = 130;
+  const strokeWidth = 20;
+  const center = 160;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
 
   return (
     <Card className="border-none shadow-none bg-transparent">
-      <CardContent className="flex flex-col items-center justify-center p-6 sm:p-8">
-        <div className="relative w-[280px] h-[280px] md:w-[320px] md:h-[320px] flex items-center justify-center">
+      <CardContent className="flex flex-col items-center justify-center p-4 sm:p-6">
+        <div className="relative w-[320px] h-[320px] flex items-center justify-center">
           
-          {/* Background Track */}
-          <div className="absolute inset-0 rounded-full border-[10px] md:border-[16px] border-muted/50" />
-          
-          {/* Foreground Progress */}
-          <div 
-            className={`absolute inset-0 rounded-full border-[10px] md:border-[16px] ${ringColor} transition-all duration-1000 ease-out z-10`}
-            style={{ 
-              clipPath: `polygon(50% 50%, 50% 0, 100% 0, 100% 100%, 0 100%, 0 50%)`,
-              transform: `rotate(${progressPercent * 3.6}deg)`
-            }} 
-          />
+          {/* Beautiful SVG Progress Ring */}
+          <svg className="absolute inset-0 w-full h-full -rotate-90 filter drop-shadow-md">
+            {/* Background Track */}
+            <circle
+              cx={center}
+              cy={center}
+              r={radius}
+              fill="transparent"
+              stroke="currentColor"
+              strokeWidth={strokeWidth}
+              className="text-muted/30"
+            />
+            {/* Foreground Animated Progress */}
+            <circle
+              cx={center}
+              cy={center}
+              r={radius}
+              fill="transparent"
+              stroke="currentColor"
+              strokeWidth={strokeWidth}
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              className={`${ringColor} transition-all duration-1000 ease-out`}
+            />
+          </svg>
 
-          <div
-             className={`absolute inset-0 rounded-full border-[10px] md:border-[16px] border-transparent transition-all z-20`}
-             style={{
-               borderTopColor: 'currentColor',
-               borderRightColor: progressPercent > 25 ? 'currentColor' : 'transparent',
-               borderBottomColor: progressPercent > 50 ? 'currentColor' : 'transparent',
-               borderLeftColor: progressPercent > 75 ? 'currentColor' : 'transparent',
-               color: ringColor.includes('primary') ? 'hsl(var(--primary))' : 
-                      ringColor.includes('teal') ? '#2dd4bf' :
-                      ringColor.includes('amber') ? '#fbbf24' : '#c084fc',
-               clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
-             }}
-          />
-          
-          <div className="absolute inset-0 block rounded-full" style={conicStyle} />
-
-          {/* Center Element */}
-          <div className="absolute inset-[15px] md:inset-[20px] rounded-full bg-card shadow-elevated flex flex-col items-center justify-center z-30">
-            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Cycle Day</p>
-            <h2 className="text-7xl font-serif font-medium text-foreground mb-1">{currentDay || '—'}</h2>
-            <p className="text-sm font-medium text-primary">{phaseName}</p>
+          {/* Inner Glow Center Element */}
+          <div className="absolute inset-0 m-auto w-[220px] h-[220px] rounded-full bg-card/80 backdrop-blur-sm shadow-[0_0_40px_-10px_rgba(0,0,0,0.3)] border border-border/50 flex flex-col items-center justify-center z-30">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Cycle Day</p>
+            <h2 className="text-7xl font-serif font-semibold text-foreground tracking-tighter mb-1 filter drop-shadow-sm">{currentDay || '—'}</h2>
+            <p className={`text-sm font-medium ${ringColor}`}>{phaseName}</p>
           </div>
         </div>
 
         {/* Legend */}
-        <div className="flex gap-4 mt-8 flex-wrap justify-center bg-card shadow-sm px-6 py-3 rounded-full border border-border">
+        <div className="flex gap-4 mt-10 flex-wrap justify-center bg-card shadow-sm px-6 py-3 rounded-full border border-border">
           <LegendItem color="bg-primary" label="Menstrual" />
           <LegendItem color="bg-teal-400" label="Follicular" />
           <LegendItem color="bg-amber-400" label="Ovulatory" />
@@ -96,8 +96,8 @@ export function HeroProgress({ currentDay, prediction, inPeriod }: HeroProgressP
 
 function LegendItem({ color, label }: { color: string, label: string }) {
   return (
-    <div className="flex items-center gap-1.5">
-      <div className={`w-3 h-3 rounded-full ${color} shadow-sm`} />
+    <div className="flex items-center gap-2">
+      <div className={`w-3 h-3 rounded-full ${color} shadow-sm ring-1 ring-border/50`} />
       <span className="text-xs text-foreground font-medium">{label}</span>
     </div>
   );
