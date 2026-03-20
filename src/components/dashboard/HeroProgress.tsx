@@ -1,5 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Prediction } from '@/types/cycle';
+import { Moon, Flower2, Star, Sun } from 'lucide-react';
 
 interface HeroProgressProps {
   currentDay: number | null;
@@ -9,75 +10,89 @@ interface HeroProgressProps {
 
 export function HeroProgress({ currentDay, prediction, inPeriod }: HeroProgressProps) {
   const isMenstrual = inPeriod;
-  const isFollicular = !inPeriod && currentDay && currentDay < 14;
-  const isOvulatory = currentDay && currentDay >= 14 && currentDay <= 16;
+  const isFollicular = !inPeriod && currentDay && currentDay <= 13;
+  const isOvulatory = currentDay && currentDay > 13 && currentDay <= 16;
   const isLuteal = currentDay && currentDay > 16;
 
-  let phaseName = 'Unknown Phase';
-  let ringColor = 'hsl(var(--primary))'; // Default to primary pink
-  let textColor = 'text-primary';
-  
-  if (!currentDay) {
-    phaseName = 'No Data';
-    ringColor = 'hsl(var(--muted))';
-    textColor = 'text-muted-foreground';
-  } else if (isMenstrual) {
-    phaseName = 'Menstrual Phase';
-    ringColor = 'hsl(var(--primary))'; // Pink
-    textColor = 'text-primary';
-  } else if (isFollicular) {
-    phaseName = 'Follicular Phase';
-    ringColor = '#2dd4bf'; // Teal
-    textColor = 'text-teal-400';
-  } else if (isOvulatory) {
-    phaseName = 'Ovulatory Phase';
-    ringColor = '#fbbf24'; // Amber
-    textColor = 'text-amber-400';
-  } else if (isLuteal) {
-    phaseName = 'Luteal Phase';
-    ringColor = '#c084fc'; // Purple
-    textColor = 'text-purple-400';
+  let phaseName = 'No Data';
+  if (currentDay) {
+    if (isMenstrual) phaseName = 'Menstrual Phase';
+    else if (isFollicular) phaseName = 'Follicular Phase';
+    else if (isOvulatory) phaseName = 'Ovulatory Phase';
+    else if (isLuteal) phaseName = 'Luteal Phase';
   }
 
+  const daysLeft = currentDay ? Math.max(0, 28 - currentDay) : 0;
   const progressPercent = currentDay ? Math.min((currentDay / 28) * 100, 100) : 0;
   
-  // Create a stunning, glossy conic gradient
-  const conicStyle = currentDay ? {
-    background: `conic-gradient(${ringColor} ${progressPercent}%, hsl(var(--muted)/0.3) 0%)`
-  } : { background: 'hsl(var(--muted)/0.3)' };
+  const radius = 130;
+  const strokeWidth = 36;
+  const center = 160;
+  const circumference = 2 * Math.PI * radius;
+  
+  // Calculate stroke dasharrays for segments (based on standard 28-day cycle proportions)
+  const pMenstrual = (5 / 28) * circumference; 
+  const pFollicular = (8 / 28) * circumference; 
+  const pOvulatory = (3 / 28) * circumference; 
+  const pLuteal = (12 / 28) * circumference; 
+
+  // The glowing dot's coordinates
+  const angle = (progressPercent / 100) * 360;
+  const radian = (angle - 90) * (Math.PI / 180);
+  const dotX = center + radius * Math.cos(radian);
+  const dotY = center + radius * Math.sin(radian);
 
   return (
-    <Card className="border-none shadow-none bg-transparent pt-4">
-      <CardContent className="flex flex-col items-center justify-center p-0 sm:p-4">
-        
-        {/* The Pretty Donut Ring */}
-        <div className="relative w-[300px] h-[300px] rounded-full flex items-center justify-center shadow-[0_0_50px_-15px_rgba(0,0,0,0.5)] transition-all duration-1000 ease-in-out" 
-             style={conicStyle}>
+    <Card className="bg-[#1a1718] border-none shadow-xl rounded-3xl overflow-hidden mt-6">
+      <CardContent className="flex flex-col items-center justify-center p-12">
+        <div className="relative w-[320px] h-[320px] flex items-center justify-center">
           
-          {/* Inner Hole (creates the donut) */}
-          <div className="w-[260px] h-[260px] rounded-full bg-[#0a0a0a] border-[8px] border-[#0a0a0a] shadow-inner flex flex-col items-center justify-center z-10 relative overflow-hidden">
+          {/* Background Segmented Track */}
+          <svg className="absolute inset-0 w-full h-full -rotate-90">
+            {/* Luteal Segment (purple, covers 100% of the circle, placed at back) */}
+            <circle cx={center} cy={center} r={radius} fill="none" stroke="#C4B5FD" strokeWidth={strokeWidth} strokeLinecap="round" />
             
-            {/* Soft background glow based on phase color */}
-            <div className="absolute inset-0 opacity-20 blur-3xl" style={{ backgroundColor: ringColor }} />
+            {/* Ovulatory Segment (Yellow) */}
+            <circle cx={center} cy={center} r={radius} fill="none" stroke="#FDE047" strokeWidth={strokeWidth} 
+              strokeDasharray={`${pOvulatory + pFollicular + pMenstrual} ${circumference}`} strokeLinecap="round" />
             
-            {/* Center Content */}
-            <div className="relative z-20 flex flex-col items-center justify-center">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.2em] mb-2 drop-shadow-sm">Cycle Day</p>
-              <h2 className="text-8xl font-serif font-semibold text-white tracking-tighter mb-2 filter drop-shadow-md">{currentDay || '—'}</h2>
-              <p className={`text-base font-semibold ${textColor} tracking-wide`}>{phaseName}</p>
-            </div>
+            {/* Follicular Segment (Mint/Teal) */}
+            <circle cx={center} cy={center} r={radius} fill="none" stroke="#99F6E4" strokeWidth={strokeWidth} 
+              strokeDasharray={`${pFollicular + pMenstrual} ${circumference}`} strokeLinecap="round" />
+            
+            {/* Menstrual Segment (Pink) */}
+            <circle cx={center} cy={center} r={radius} fill="none" stroke="#FB7185" strokeWidth={strokeWidth} 
+              strokeDasharray={`${pMenstrual} ${circumference}`} strokeLinecap="round" />
+          </svg>
+
+          {/* Current Progress Dot */}
+          {currentDay && (
+            <div className="absolute w-[24px] h-[24px] rounded-full bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)] border-[6px] border-primary z-20 transition-all duration-1000"
+                 style={{ left: `${dotX - 12}px`, top: `${dotY - 12}px` }} />
+          )}
+
+          {/* Floating Icons */}
+          <Moon className="absolute text-primary w-4 h-4" style={{ top: '10px', right: '40px' }} />
+          <Flower2 className="absolute text-[#99F6E4] w-4 h-4" style={{ bottom: '40px', right: '20px' }} />
+          <Star className="absolute text-[#FDE047] w-4 h-4" style={{ bottom: '0px', left: '160px' }} />
+          <Sun className="absolute text-[#C4B5FD] w-5 h-5" style={{ top: '120px', left: '5px' }} />
+
+          {/* Center Text */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+            <h2 className="text-5xl font-sans font-bold text-white mb-1 shadow-sm">Day {currentDay || '—'}</h2>
+            <p className="text-base text-zinc-300 mb-1">{phaseName}</p>
+            {currentDay && (
+              <p className="text-sm font-medium text-zinc-400">{daysLeft} days left</p>
+            )}
           </div>
-          
-          {/* Subtle outer glass ring */}
-          <div className="absolute inset-0 rounded-full border border-white/5 pointer-events-none" />
         </div>
 
         {/* Legend */}
-        <div className="flex gap-5 mt-12 flex-wrap justify-center bg-[#111] shadow-xl px-8 py-4 rounded-full border border-white/5">
-          <LegendItem color="bg-primary" label="Menstrual" />
-          <LegendItem color="bg-teal-400" label="Follicular" />
-          <LegendItem color="bg-amber-400" label="Ovulatory" />
-          <LegendItem color="bg-purple-400" label="Luteal" />
+        <div className="flex gap-6 mt-14 flex-wrap justify-center">
+          <LegendItem color="bg-[#FB7185]" label="Menstrual" />
+          <LegendItem color="bg-[#99F6E4]" label="Follicular" />
+          <LegendItem color="bg-[#FDE047]" label="Ovulatory" />
+          <LegendItem color="bg-[#C4B5FD]" label="Luteal" />
         </div>
       </CardContent>
     </Card>
@@ -87,8 +102,8 @@ export function HeroProgress({ currentDay, prediction, inPeriod }: HeroProgressP
 function LegendItem({ color, label }: { color: string, label: string }) {
   return (
     <div className="flex items-center gap-2">
-      <div className={`w-3.5 h-3.5 rounded-full ${color} shadow-sm ring-2 ring-white/10`} />
-      <span className="text-xs text-zinc-300 font-medium tracking-wide">{label}</span>
+      <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
+      <span className="text-xs text-zinc-400 font-medium">{label}</span>
     </div>
   );
 }
