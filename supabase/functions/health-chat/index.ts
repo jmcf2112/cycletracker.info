@@ -155,7 +155,11 @@ serve(async (req) => {
     // --- Call Lovable AI Gateway ---
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      console.error("LOVABLE_API_KEY is not configured");
+      return new Response(
+        JSON.stringify({ error: "AI service is temporarily unavailable" }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const systemPrompt = getSystemPrompt(mode, validCycleDay, validCycleLength);
@@ -200,7 +204,7 @@ serve(async (req) => {
   } catch (e) {
     console.error("health-chat error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Internal server error" }),
+      JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
