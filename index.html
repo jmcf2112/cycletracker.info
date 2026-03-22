@@ -34,15 +34,15 @@
 
   <body>
     <script>
-      // Sanitize localStorage: remove corrupted/encrypted entries that crash JSON.parse
+      // Sanitize localStorage: remove corrupted entries that crash JSON.parse
+      // Note: 'enc:' prefix is valid encrypted data and should NOT be removed
       (function() {
         try {
-          for (var i = localStorage.length - 1; i >= 0; i--) {
-            var key = localStorage.key(i);
-            var val = localStorage.getItem(key);
-            if (val && val.indexOf('enc:') === 0) {
-              localStorage.removeItem(key);
-            }
+          var key = 'cycle-tracker-v2';
+          var val = localStorage.getItem(key);
+          if (val && val.indexOf('enc:') !== 0) {
+            // Try parsing – if it fails, remove the corrupted entry
+            try { JSON.parse(val); } catch(e) { localStorage.removeItem(key); }
           }
         } catch(e) {}
       })();
