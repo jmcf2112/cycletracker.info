@@ -72,10 +72,10 @@ export function HeroProgress({ currentDay, prediction, inPeriod }: HeroProgressP
           )}
 
           {/* Floating Icons */}
-          <Moon className="absolute text-primary w-4 h-4" style={{ top: '10px', right: '40px' }} />
-          <Flower2 className="absolute text-[#99F6E4] w-4 h-4" style={{ bottom: '40px', right: '20px' }} />
-          <Star className="absolute text-[#FDE047] w-4 h-4" style={{ bottom: '0px', left: '160px' }} />
-          <Sun className="absolute text-[#C4B5FD] w-5 h-5" style={{ top: '120px', left: '5px' }} />
+          <Moon aria-hidden="true" className="absolute text-primary w-4 h-4" style={{ top: '10px', right: '40px' }} />
+          <Flower2 aria-hidden="true" className="absolute text-[#99F6E4] w-4 h-4" style={{ bottom: '40px', right: '20px' }} />
+          <Star aria-hidden="true" className="absolute text-[#FDE047] w-4 h-4" style={{ bottom: '0px', left: '160px' }} />
+          <Sun aria-hidden="true" className="absolute text-[#C4B5FD] w-5 h-5" style={{ top: '120px', left: '5px' }} />
 
           {/* Center Text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
