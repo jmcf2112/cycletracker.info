@@ -57,7 +57,7 @@ export function InsightsView({ stats, entries, onBack }: InsightsViewProps) {
                   <div className="p-4 rounded-xl bg-primary-soft">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2"><Clock className="w-4 h-4 text-primary" /><span className="text-sm font-medium">Average Cycle</span></div>
-                      <Tooltip><TooltipTrigger><Info className="w-4 h-4 text-muted-foreground" /></TooltipTrigger><TooltipContent><p>Based on {stats.cyclesUsedCount} logged cycles</p></TooltipContent></Tooltip>
+                      <Tooltip><TooltipTrigger aria-label="More information"><Info className="w-4 h-4 text-muted-foreground" /></TooltipTrigger><TooltipContent><p>Based on {stats.cyclesUsedCount} logged cycles</p></TooltipContent></Tooltip>
                     </div>
                     <div className="flex items-baseline gap-1"><span className="text-3xl font-serif font-semibold">{Math.round(stats.averageCycleLength)}</span><span className="text-muted-foreground">days</span></div>
                   </div>

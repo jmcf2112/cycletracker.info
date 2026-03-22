@@ -103,7 +103,7 @@ function LegendItem({ color, label }: { color: string, label: string }) {
   return (
     <div className="flex items-center gap-2">
       <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
-      <span className="text-xs text-zinc-400 font-medium">{label}</span>
+      <span className="text-xs text-zinc-300 font-medium">{label}</span>
     </div>
   );
 }

@@ -45,7 +45,7 @@ export function SettingsView({ settings, onUpdateSettings, onExport, onDeleteAll
   return (
     <div className="min-h-screen gradient-calm p-4">
       <div className="max-w-lg mx-auto">
-        <Button variant="ghost" onClick={onBack} className="mb-4"><ArrowLeft className="w-4 h-4 mr-2" />Back</Button>
+        <Button variant="ghost" onClick={onBack} className="mb-4 min-h-[48px]"><ArrowLeft className="w-4 h-4 mr-2" />Back</Button>
         <div className="space-y-4">
           <Card variant="elevated">
             <CardHeader><CardTitle className="flex items-center gap-2"><Settings className="w-5 h-5 text-primary" />Settings</CardTitle></CardHeader>
