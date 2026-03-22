@@ -81,6 +81,7 @@ export function Dashboard() {
 
       {/* Floating Action Button */}
       <button 
+        aria-label="Log new cycle entry"
         className="fixed bottom-8 right-8 w-16 h-16 bg-[#FB7185] text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(251,113,133,0.4)] hover:bg-[#e11d48] hover:scale-105 transition-all duration-300 z-50"
         onClick={() => {
           setEditingEntry(undefined);

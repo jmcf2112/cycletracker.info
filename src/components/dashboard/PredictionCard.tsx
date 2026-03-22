@@ -34,7 +34,7 @@ export function PredictionCard({ prediction }: PredictionCardProps) {
         <CardTitle className="text-lg flex items-center gap-2">
           <CalendarRange className="w-5 h-5 text-primary" />Prediction Window
           <Tooltip>
-            <TooltipTrigger asChild><Info className="w-4 h-4 text-muted-foreground cursor-help" /></TooltipTrigger>
+            <TooltipTrigger asChild><Info className="w-4 h-4 text-muted-foreground cursor-help" aria-label="Prediction details" /></TooltipTrigger>
             <TooltipContent className="max-w-xs">
               <p>Based on your last {prediction.cyclesUsedCount} cycles. The window accounts for natural variation in cycle length.</p>
             </TooltipContent>

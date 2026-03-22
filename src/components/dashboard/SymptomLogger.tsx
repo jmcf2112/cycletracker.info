@@ -29,17 +29,18 @@ export function SymptomLogger({ onLog }: { onLog: (symptoms: string) => void }) 
       <div className="flex items-center gap-3 overflow-x-auto pb-4 hide-scrollbar" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
         {symptoms.map(s => (
           <button 
-            key={s.label} 
+            key={s.label}
+            aria-label={`Log ${s.label} symptom`}
             onClick={() => onLog(`${s.emoji} - ${s.label}`)} 
-            className="flex-shrink-0 flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-[#262425] hover:bg-[#333132] transition-colors border border-transparent hover:border-white/5"
+            className="flex-shrink-0 flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-[#262425] hover:bg-[#333132] transition-colors border border-transparent hover:border-white/5 min-h-[48px]"
           >
-            <span className="text-lg lg:text-xl leading-none drop-shadow-sm">{s.emoji}</span>
+            <span className="text-lg lg:text-xl leading-none drop-shadow-sm" aria-hidden="true">{s.emoji}</span>
             <span className="text-sm text-zinc-300 font-medium tracking-wide leading-none">{s.label}</span>
           </button>
         ))}
       </div>
       
-      <p className="mt-2 text-[13.5px] text-zinc-500 font-medium tracking-wide">
+      <p className="mt-2 text-[13.5px] text-zinc-400 font-medium tracking-wide">
         Track your symptoms, mood, and flow to get personalized insights.
       </p>
     </div>

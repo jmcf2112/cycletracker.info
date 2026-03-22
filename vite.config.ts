@@ -17,4 +17,16 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    sourcemap: false,
+    target: "es2020",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "date-fns": ["date-fns"],
+          "framer-motion": ["framer-motion"],
+        },
+      },
+    },
+  },
 }));

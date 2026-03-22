@@ -72,17 +72,17 @@ export function HeroProgress({ currentDay, prediction, inPeriod }: HeroProgressP
           )}
 
           {/* Floating Icons */}
-          <Moon className="absolute text-primary w-4 h-4" style={{ top: '10px', right: '40px' }} />
-          <Flower2 className="absolute text-[#99F6E4] w-4 h-4" style={{ bottom: '40px', right: '20px' }} />
-          <Star className="absolute text-[#FDE047] w-4 h-4" style={{ bottom: '0px', left: '160px' }} />
-          <Sun className="absolute text-[#C4B5FD] w-5 h-5" style={{ top: '120px', left: '5px' }} />
+          <Moon aria-hidden="true" className="absolute text-primary w-4 h-4" style={{ top: '10px', right: '40px' }} />
+          <Flower2 aria-hidden="true" className="absolute text-[#99F6E4] w-4 h-4" style={{ bottom: '40px', right: '20px' }} />
+          <Star aria-hidden="true" className="absolute text-[#FDE047] w-4 h-4" style={{ bottom: '0px', left: '160px' }} />
+          <Sun aria-hidden="true" className="absolute text-[#C4B5FD] w-5 h-5" style={{ top: '120px', left: '5px' }} />
 
           {/* Center Text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
             <h2 className="text-5xl font-sans font-bold text-white mb-1 shadow-sm">Day {currentDay || '—'}</h2>
             <p className="text-base text-zinc-300 mb-1">{phaseName}</p>
             {currentDay && (
-              <p className="text-sm font-medium text-zinc-400">{daysLeft} days left</p>
+              <p className="text-sm font-medium text-zinc-300">{daysLeft} days left</p>
             )}
           </div>
         </div>
@@ -103,7 +103,7 @@ function LegendItem({ color, label }: { color: string, label: string }) {
   return (
     <div className="flex items-center gap-2">
       <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
-      <span className="text-xs text-zinc-400 font-medium">{label}</span>
+      <span className="text-xs text-zinc-300 font-medium">{label}</span>
     </div>
   );
 }
