@@ -82,7 +82,7 @@ export function HeroProgress({ currentDay, prediction, inPeriod }: HeroProgressP
             <h2 className="text-5xl font-sans font-bold text-white mb-1 shadow-sm">Day {currentDay || '—'}</h2>
             <p className="text-base text-zinc-300 mb-1">{phaseName}</p>
             {currentDay && (
-              <p className="text-sm font-medium text-zinc-400">{daysLeft} days left</p>
+              <p className="text-sm font-medium text-zinc-300">{daysLeft} days left</p>
             )}
           </div>
         </div>
