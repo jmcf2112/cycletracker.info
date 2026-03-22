@@ -1,66 +1,97 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CycleData, CycleEntry, UserSettings } from '@/types/cycle';
-import { 
-  getStoredData, 
-  saveData, 
-  addCycleEntry, 
-  updateCycleEntry, 
-  deleteCycleEntry,
-  deleteAllData,
-  exportData,
-} from '@/lib/storage';
+import { loadStoredDataAsync, saveDataAsync, deleteAllData } from '@/lib/storage';
 import { calculateStats, calculatePrediction, getCurrentCycleDay, isInPeriod } from '@/lib/predictions';
 
+const defaultSettings: UserSettings = {
+  privacyAcknowledged: false,
+  notificationsEnabled: false,
+  onboardingComplete: false,
+};
+
+const defaultData: CycleData = { settings: defaultSettings, entries: [] };
+
 export function useCycleData() {
-  const [data, setData] = useState<CycleData>(() => getStoredData());
+  const [data, setData] = useState<CycleData>(defaultData);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setData(getStoredData());
-    setIsLoading(false);
-  }, []);
-
-  const refresh = useCallback(() => {
-    setData(getStoredData());
-  }, []);
-
-  const updateSettings = useCallback((updates: Partial<UserSettings>) => {
-    setData(prev => {
-      const newData = {
-        ...prev,
-        settings: { ...prev.settings, ...updates },
-      };
-      saveData(newData);
-      return newData;
+    loadStoredDataAsync().then((loaded) => {
+      setData(loaded);
+      setIsLoading(false);
     });
   }, []);
 
+  // Persist whenever data changes (skip initial default)
+  const hasLoaded = !isLoading;
+  useEffect(() => {
+    if (hasLoaded) {
+      saveDataAsync(data);
+    }
+  }, [data, hasLoaded]);
+
+  const refresh = useCallback(() => {
+    loadStoredDataAsync().then(setData);
+  }, []);
+
+  const updateSettings = useCallback((updates: Partial<UserSettings>) => {
+    setData((prev) => ({
+      ...prev,
+      settings: { ...prev.settings, ...updates },
+    }));
+  }, []);
+
   const addEntry = useCallback((entry: Omit<CycleEntry, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newEntry = addCycleEntry(entry);
-    refresh();
+    const now = new Date().toISOString();
+    const newEntry: CycleEntry = {
+      ...entry,
+      id: crypto.randomUUID(),
+      createdAt: now,
+      updatedAt: now,
+    };
+    setData((prev) => {
+      const entries = [...prev.entries, newEntry].sort(
+        (a, b) => new Date(b.cycleStartDate).getTime() - new Date(a.cycleStartDate).getTime(),
+      );
+      return { ...prev, entries };
+    });
     return newEntry;
-  }, [refresh]);
+  }, []);
 
   const updateEntry = useCallback((id: string, updates: Partial<Omit<CycleEntry, 'id' | 'createdAt'>>) => {
-    const updated = updateCycleEntry(id, updates);
-    refresh();
+    let updated: CycleEntry | null = null;
+    setData((prev) => {
+      const index = prev.entries.findIndex((e) => e.id === id);
+      if (index === -1) return prev;
+      const entries = [...prev.entries];
+      entries[index] = { ...entries[index], ...updates, updatedAt: new Date().toISOString() };
+      updated = entries[index];
+      entries.sort((a, b) => new Date(b.cycleStartDate).getTime() - new Date(a.cycleStartDate).getTime());
+      return { ...prev, entries };
+    });
     return updated;
-  }, [refresh]);
+  }, []);
 
   const deleteEntry = useCallback((id: string) => {
-    const success = deleteCycleEntry(id);
-    refresh();
-    return success;
-  }, [refresh]);
+    let found = false;
+    setData((prev) => {
+      const entries = prev.entries.filter((e) => {
+        if (e.id === id) { found = true; return false; }
+        return true;
+      });
+      return { ...prev, entries };
+    });
+    return found;
+  }, []);
 
   const clearAllData = useCallback(() => {
     deleteAllData();
-    refresh();
-  }, [refresh]);
+    setData(defaultData);
+  }, []);
 
   const getExportData = useCallback(() => {
-    return exportData();
-  }, []);
+    return JSON.stringify(data, null, 2);
+  }, [data]);
 
   const stats = calculateStats(data.entries, data.settings.averageCycleOverride);
   const prediction = calculatePrediction(data.entries, data.settings.averageCycleOverride);
