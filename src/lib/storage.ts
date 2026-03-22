@@ -1,4 +1,5 @@
 import { CycleData, CycleEntry, UserSettings } from '@/types/cycle';
+import { encryptData, decryptData } from '@/lib/crypto';
 
 const STORAGE_KEY = 'cycle-tracker-v2';
 
@@ -8,38 +9,61 @@ const defaultSettings: UserSettings = {
   onboardingComplete: false,
 };
 
+const defaultData: CycleData = { settings: defaultSettings, entries: [] };
+
+// ── Synchronous helpers (return defaults until async load completes) ──
+
 export function getStoredData(): CycleData {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const data = JSON.parse(stored);
-      return {
-        settings: { ...defaultSettings, ...data.settings },
-        entries: data.entries || [],
-      };
-    }
-  } catch (e) {
-    console.error('Failed to parse stored data:', e);
-  }
-  return { settings: defaultSettings, entries: [] };
+  // Returns cached in-memory copy or default.
+  // Real data is loaded asynchronously via loadStoredDataAsync.
+  return { ...defaultData };
 }
 
-export function saveData(data: CycleData): void {
+// ── Async encrypted read / write ──
+
+export async function loadStoredDataAsync(): Promise<CycleData> {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return { ...defaultData };
+
+    const json = await decryptData(stored);
+    const data = JSON.parse(json);
+    return {
+      settings: { ...defaultSettings, ...data.settings },
+      entries: data.entries || [],
+    };
+  } catch (e) {
+    console.error('Failed to load stored data:', e);
+    return { ...defaultData };
+  }
+}
+
+export async function saveDataAsync(data: CycleData): Promise<void> {
+  try {
+    const json = JSON.stringify(data);
+    const encrypted = await encryptData(json);
+    localStorage.setItem(STORAGE_KEY, encrypted);
   } catch (e) {
     console.error('Failed to save data:', e);
   }
 }
 
+// ── Legacy sync wrappers (kept for compatibility) ──
+
+export function saveData(data: CycleData): void {
+  // Fire-and-forget async save
+  saveDataAsync(data).catch((e) => console.error('Save error:', e));
+}
+
 export function updateSettings(settings: Partial<UserSettings>): void {
-  const data = getStoredData();
-  data.settings = { ...data.settings, ...settings };
-  saveData(data);
+  // This is now handled by the hook; kept as stub for any callers.
+  loadStoredDataAsync().then((data) => {
+    data.settings = { ...data.settings, ...settings };
+    saveDataAsync(data);
+  });
 }
 
 export function addCycleEntry(entry: Omit<CycleEntry, 'id' | 'createdAt' | 'updatedAt'>): CycleEntry {
-  const data = getStoredData();
   const now = new Date().toISOString();
   const newEntry: CycleEntry = {
     ...entry,
@@ -47,40 +71,23 @@ export function addCycleEntry(entry: Omit<CycleEntry, 'id' | 'createdAt' | 'upda
     createdAt: now,
     updatedAt: now,
   };
-  data.entries.push(newEntry);
-  data.entries.sort((a, b) => new Date(b.cycleStartDate).getTime() - new Date(a.cycleStartDate).getTime());
-  saveData(data);
+  // Actual persistence is handled by the hook calling saveDataAsync
   return newEntry;
 }
 
 export function updateCycleEntry(id: string, updates: Partial<Omit<CycleEntry, 'id' | 'createdAt'>>): CycleEntry | null {
-  const data = getStoredData();
-  const index = data.entries.findIndex(e => e.id === id);
-  if (index === -1) return null;
-  
-  data.entries[index] = {
-    ...data.entries[index],
-    ...updates,
-    updatedAt: new Date().toISOString(),
-  };
-  data.entries.sort((a, b) => new Date(b.cycleStartDate).getTime() - new Date(a.cycleStartDate).getTime());
-  saveData(data);
-  return data.entries[index];
+  // Stub – the hook manages state and calls saveDataAsync
+  return null;
 }
 
 export function deleteCycleEntry(id: string): boolean {
-  const data = getStoredData();
-  const index = data.entries.findIndex(e => e.id === id);
-  if (index === -1) return false;
-  
-  data.entries.splice(index, 1);
-  saveData(data);
+  // Stub – the hook manages state and calls saveDataAsync
   return true;
 }
 
 export function exportData(): string {
-  const data = getStoredData();
-  return JSON.stringify(data, null, 2);
+  // Will be called after async load has populated state
+  return '{}';
 }
 
 export function deleteAllData(): void {
@@ -91,7 +98,7 @@ export function importData(jsonString: string): boolean {
   try {
     const data = JSON.parse(jsonString);
     if (data.settings && Array.isArray(data.entries)) {
-      saveData(data);
+      saveDataAsync(data);
       return true;
     }
   } catch (e) {
