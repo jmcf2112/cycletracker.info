@@ -1,15 +1,13 @@
 
 
-# Plan: Force Rebuild to Show Google & Apple Sign-In Buttons
+# Plan: Force Rebuild — Trivial Touch to Auth.tsx
 
-The `Auth.tsx` file already contains the Google and Apple sign-in buttons with the correct `lovable.auth.signInWithOAuth()` calls. The preview is serving a cached/stale build.
+Add a single comment line to `src/pages/Auth.tsx` to trigger Vite's rebuild. The Google and Apple sign-in buttons are already coded — they just need the build cache to refresh.
 
-## What I'll Do
-
-Make a trivial whitespace change to `src/pages/Auth.tsx` (add a comment) to force Vite to rebuild and serve the updated code. No functional changes needed — the social login buttons are already implemented.
-
-## Files Modified
-| File | Change |
+## Change
+| File | What |
 |---|---|
-| `src/pages/Auth.tsx` | Add a rebuild trigger comment |
+| `src/pages/Auth.tsx` | Add `// rebuild` comment on line 1 |
+
+No functional changes. Just a cache-bust.
 
