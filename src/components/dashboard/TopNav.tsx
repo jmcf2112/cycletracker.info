@@ -1,4 +1,4 @@
-import { Flower2, Moon, Sun, Globe, Bell, LogOut, Calendar, Activity, BarChart2, Settings as SettingsIcon } from 'lucide-react';
+import { Moon, Globe, Bell, LogOut, Calendar, Activity, BarChart2, Settings as SettingsIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function TopNav({ activeTab, onTabSelect }: { activeTab: string, onTabSelect: (val: string) => void }) {
