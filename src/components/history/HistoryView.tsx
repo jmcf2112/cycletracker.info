@@ -49,7 +49,7 @@ export function HistoryView({ entries, onEdit, onBack }: HistoryViewProps) {
           <CardContent className="p-0">
             <div className="divide-y">
               {entriesWithLength.map((entry) => (
-                <button key={entry.id} onClick={() => onEdit(entry)} aria-label={`Edit cycle starting ${format(parseISO(entry.cycleStartDate), 'MMMM d, yyyy')}`} className="w-full p-4 flex items-center gap-4 hover:bg-muted/50 transition-colors text-left min-h-[48px]">
+                <button key={entry.id} onClick={() => onEdit(entry)} className="w-full p-4 flex items-center gap-4 hover:bg-muted/50 transition-colors text-left">
                   <div className="w-12 h-12 rounded-xl bg-primary-soft flex flex-col items-center justify-center">
                     <span className="text-lg font-semibold text-primary">{format(parseISO(entry.cycleStartDate), 'd')}</span>
                     <span className="text-[10px] text-primary uppercase">{format(parseISO(entry.cycleStartDate), 'MMM')}</span>

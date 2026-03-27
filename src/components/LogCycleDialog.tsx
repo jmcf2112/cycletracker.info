@@ -180,7 +180,7 @@ export function LogCycleDialog({ open, onOpenChange, onSave, onDelete, editEntry
           {step === 'details' && (
             <>
               {editEntry && onDelete && (
-                <Button variant="destructive" onClick={onDelete} aria-label="Delete cycle entry">
+                <Button variant="destructive" onClick={onDelete}>
                   <Trash2 className="w-4 h-4" />
                 </Button>
               )}
