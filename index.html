@@ -40,9 +40,14 @@
         try {
           var key = 'cycle-tracker-v2';
           var val = localStorage.getItem(key);
-          if (val && val.indexOf('enc:') !== 0) {
-            // Try parsing – if it fails, remove the corrupted entry
-            try { JSON.parse(val); } catch(e) { localStorage.removeItem(key); }
+          if (val) {
+            // Remove encrypted data (enc: prefix) – encryption layer has been removed
+            if (val.indexOf('enc:') === 0) {
+              localStorage.removeItem(key);
+            } else {
+              // Try parsing – if it fails, remove the corrupted entry
+              try { JSON.parse(val); } catch(e) { localStorage.removeItem(key); }
+            }
           }
         } catch(e) {}
       })();
