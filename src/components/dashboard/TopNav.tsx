@@ -1,5 +1,6 @@
-import { Flower2, Moon, Sun, Globe, Bell, LogOut, Calendar, Activity, BarChart2, Settings as SettingsIcon } from 'lucide-react';
+import { Moon, Globe, Bell, LogOut, Calendar, Activity, BarChart2, Settings as SettingsIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 export function TopNav({ activeTab, onTabSelect }: { activeTab: string, onTabSelect: (val: string) => void }) {
   const tabs = [
