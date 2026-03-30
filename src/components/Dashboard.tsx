@@ -8,8 +8,8 @@ import { LogCycleDialog } from './LogCycleDialog';
 import { HistoryView } from './history/HistoryView';
 import { InsightsView } from './insights/InsightsView';
 import { SettingsView } from './settings/SettingsView';
-import { Sparkles, Calendar as CalendarIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Sparkles } from 'lucide-react';
+import { QuickActions } from './dashboard/QuickActions';
 
 type View = 'calendar' | 'health' | 'insights' | 'settings';
 
