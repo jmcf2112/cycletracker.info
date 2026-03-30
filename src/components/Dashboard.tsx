@@ -61,6 +61,13 @@ export function Dashboard() {
         <TopNav activeTab={view} onTabSelect={(v: string) => setView(v as View)} />
 
         <div className="animate-fade-in mt-4 lg:mt-8 w-full">
+          <QuickActions
+            onLogCycle={() => { setEditingEntry(undefined); setLogDialogOpen(true); }}
+            onViewHistory={() => setView('health')}
+            onViewInsights={() => setView('insights')}
+            onOpenSettings={() => setView('settings')}
+          />
+
           <HeroProgress 
             currentDay={currentCycleDay}
             prediction={prediction}
