@@ -1,15 +1,22 @@
-import { Moon, Globe, Bell, LogOut, Calendar, Activity, BarChart2, Settings as SettingsIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Moon, Globe, Bell, Calendar, Activity, BarChart2, Settings as SettingsIcon, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 export function TopNav({ activeTab, onTabSelect }: { activeTab: string, onTabSelect: (val: string) => void }) {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+
   const tabs = [
     { id: 'calendar', label: 'Calendar', icon: <Calendar className="w-4 h-4 mr-2" /> },
     { id: 'health', label: 'Health', icon: <Activity className="w-4 h-4 mr-2" /> },
     { id: 'insights', label: 'Insights', icon: <BarChart2 className="w-4 h-4 mr-2" /> },
     { id: 'settings', label: 'Settings', icon: <SettingsIcon className="w-4 h-4 mr-2" /> }
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
 
   return (
     <div className="flex flex-col w-full mb-6 max-w-5xl mx-auto">
@@ -30,12 +37,13 @@ export function TopNav({ activeTab, onTabSelect }: { activeTab: string, onTabSel
           </button>
           <button className="hover:text-primary transition-colors"><Globe className="w-5 h-5" /></button>
           <button className="hover:text-primary transition-colors"><Moon className="w-5 h-5" /></button>
-          <button className="hover:text-primary transition-colors flex items-center gap-2">
-            <span className="w-4 h-4 rounded-full border border-current flex items-center justify-center text-[10px]">user</span>
-            cycletracker.jmcf...
+          <button onClick={() => navigate('/profile')} className="hover:text-primary transition-colors flex items-center gap-2" aria-label="View profile">
+            <User className="w-4 h-4" />
+            <span className="hidden sm:inline truncate max-w-[120px]">{user?.email}</span>
           </button>
-          <button className="hover:text-primary transition-colors flex items-center gap-2">
-            <LogOut className="w-4 h-4" /> Sign Out
+          <button onClick={handleSignOut} className="hover:text-primary transition-colors flex items-center gap-2" aria-label="Sign out">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
           </button>
           <button className="hover:text-primary transition-colors bg-accent/10 p-2 rounded-full"><Bell className="w-4 h-4" /></button>
         </div>

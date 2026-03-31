@@ -1,31 +1,57 @@
+## Investigation Findings
 
+### Issue 1: Quick Actions toolbar position
 
-# Plan: Recreate the `health-chat` Edge Function
+The Quick Actions toolbar **is** at the top of the dashboard content area in the code (line 64-69 in Dashboard.tsx, rendered before HeroProgress). However, looking at the code, the QuickActions component renders as a `grid grid-cols-2` of buttons — it's positioned correctly in the DOM order but may not visually appear "at the top of the page" because it sits below the TopNav. The code change from the previous message was applied correctly. If the user expected it above the TopNav header itself, that's a different placement than what was implemented.  
+  
+**Diagnosis**: The QuickActions IS rendered before HeroProgress (lines 64-69). It's at the top of the content area, below the TopNav. If the user wants it literally at the very top of the page (above or inside the TopNav), that requires a different approach.
 
-## Important Note on API Key
+### Issue 2: OAuth disappeared from login/signup pages
 
-Your project already has **Lovable AI** configured (the `LOVABLE_API_KEY` secret is present). This provides access to high-quality AI models (Google Gemini, OpenAI GPT-5) without needing a separate OpenAI API key. The plan below uses Lovable AI, saving you the cost and hassle of managing a separate key.
+**There are no login/signup pages in the codebase.** The project has:
 
-If you still prefer to use your own OpenAI key instead, let me know after reviewing.
+- No Auth page (`/auth`, `/login`, `/signup` — none exist)
+- No `useAuth` hook
+- No `AuthProvider` context
+- No `ProtectedRoute` or `PublicRoute` components
+- No `src/integrations/lovable/` directory (no cloud auth module)
+- No references to `signInWithOAuth`, `lovable.auth`, or any OAuth flow
 
-## What Will Be Built
+The memory file mentions an auth system with `AuthProvider`, `ProtectedRoute`, Google/Apple OAuth, and a profile page at `/profile`, but **none of this code exists in the current codebase**. The authentication system appears to have been completely removed or lost at some point.
 
-A single edge function at `supabase/functions/health-chat/index.ts` that:
+The App.tsx routes are only: `/` (Index), `/support` (Support), and `*` (NotFound). The Index page shows onboarding or the Dashboard directly — no auth gate.
 
-1. **Validates the JWT** from the Authorization header to identify the user
-2. **Rate limits** using the existing `check_and_increment_chat_rate_limit` database function (15 req/60s)
-3. **Validates input**: mode must be one of `cycle`, `pregnancy`, `menopause`; max 50 messages, 2000 chars each; cycleDay 1-100, cycleLength 15-90
-4. **Sanitizes messages** by stripping HTML tags and control characters, whitelisting role to `user`/`assistant`
-5. **Calls Lovable AI Gateway** (`https://ai.gateway.lovable.dev/v1/chat/completions`) with a mode-specific system prompt tailored to cycle tracking, pregnancy, or menopause
-6. **Streams the response** back via SSE (Server-Sent Events) — matching exactly what the existing frontend expects
-7. **Handles errors** gracefully (429 rate limit, 402 payment required, sanitized error messages)
+## Recommended Plan
 
-## Technical Details
+### Step 1: Confirm Quick Actions placement intent
 
-- **File created**: `supabase/functions/health-chat/index.ts`
-- **Secrets used**: `LOVABLE_API_KEY` (already configured), `SUPABASE_URL`, `SUPABASE_ANON_KEY`
-- **Model**: `google/gemini-3-flash-preview` (fast, capable, good for health Q&A)
-- **CORS**: Full headers for browser compatibility
-- **No config.toml changes needed** — Lovable-managed functions deploy with `verify_jwt = false` by default; JWT validation is done in code
-- **Deployed automatically** after creation via the deploy tool
+Clarify whether the user wants QuickActions above the TopNav header, or if the current position (top of content, below nav) is acceptable.  
+  
+"Move the Quick Actions toolbar directly above the Cycle Phase Timeline."
 
+### Step 2: Rebuild authentication system
+
+Since auth is completely missing, we need to recreate:
+
+1. **Install `@lovable.dev/cloud-auth-js**` and use the Configure Social Login tool to scaffold the lovable auth module
+2. **Create `src/hooks/useAuth.tsx**` — AuthProvider context wrapping Supabase `onAuthStateChange` + `getSession`
+3. **Create `src/pages/Auth.tsx**` — Login/signup page with email+password forms and Google/Apple OAuth buttons using `lovable.auth.signInWithOAuth()`
+4. **Create `src/components/ProtectedRoute.tsx**` and `src/components/PublicRoute.tsx`** — route guards
+5. **Create `src/pages/Profile.tsx**` and `src/pages/ResetPassword.tsx`** — account management
+6. **Update `src/App.tsx**` — wrap with AuthProvider, add `/auth`, `/profile`, `/reset-password` routes with appropriate guards
+7. **Verify profiles table exists** in the database (check schema)
+
+### Files to create
+
+- `src/hooks/useAuth.tsx`
+- `src/pages/Auth.tsx`
+- `src/pages/Profile.tsx`
+- `src/pages/ResetPassword.tsx`
+- `src/components/ProtectedRoute.tsx`
+- `src/components/PublicRoute.tsx`
+
+### Files to modify
+
+- `src/App.tsx` — add AuthProvider, new routes
+- `src/components/Dashboard.tsx` — optionally move QuickActions placement
+- `src/components/dashboard/TopNav.tsx` — wire Sign Out to real `signOut()`
