@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { CycleData, CycleEntry, UserSettings } from '@/types/cycle';
 import { loadStoredDataAsync, saveDataAsync, deleteAllData } from '@/lib/storage';
 import { calculateStats, calculatePrediction, getCurrentCycleDay, isInPeriod } from '@/lib/predictions';
+import { sendNotificationEmail } from '@/lib/notifications';
+import { supabase } from '@/integrations/supabase/client';
 
 const defaultSettings: UserSettings = {
   privacyAcknowledged: false,
