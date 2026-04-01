@@ -57,6 +57,18 @@ export function useCycleData() {
       );
       return { ...prev, entries };
     });
+
+    // Send notification email for new cycle entry
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email) {
+        sendNotificationEmail(
+          user.email,
+          'Cycle Tracker: New Cycle Entry Logged',
+          `<p>A new cycle entry starting <strong>${newEntry.cycleStartDate}</strong> has been logged.</p>`,
+        );
+      }
+    });
+
     return newEntry;
   }, []);
 
