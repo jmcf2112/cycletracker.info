@@ -50,12 +50,6 @@ const Auth = () => {
     }
   };
 
-  const handleOAuth = async (provider: 'google' | 'apple') => {
-    const { error } = await lovable.auth.signInWithOAuth(provider, {
-      redirect_uri: window.location.origin,
-    });
-    if (error) toast.error(error.message);
-  };
 
   if (signUpSuccess) {
     return (
