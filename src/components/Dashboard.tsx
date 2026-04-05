@@ -8,8 +8,9 @@ import { LogCycleDialog } from './LogCycleDialog';
 import { HistoryView } from './history/HistoryView';
 import { InsightsView } from './insights/InsightsView';
 import { SettingsView } from './settings/SettingsView';
-import { Sparkles, Mail, MailX } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { QuickActions } from './dashboard/QuickActions';
+import { NotificationStatusBanner } from './dashboard/NotificationStatusBanner';
 
 type View = 'calendar' | 'health' | 'insights' | 'settings';
 
