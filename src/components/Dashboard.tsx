@@ -69,18 +69,7 @@ export function Dashboard() {
             onOpenSettings={() => setView('settings')}
           />
 
-          {/* Email notification status banner */}
-          <div className={`flex items-center gap-2 mt-3 px-3 py-2 rounded-lg text-xs font-medium ${
-            settings.notificationsEnabled 
-              ? 'bg-emerald-500/10 text-emerald-400' 
-              : 'bg-muted/30 text-muted-foreground'
-          }`}>
-            {settings.notificationsEnabled ? (
-              <><Mail className="w-3.5 h-3.5" /> Email notifications are active</>
-            ) : (
-              <><MailX className="w-3.5 h-3.5" /> Email notifications are off</>
-            )}
-          </div>
+          <NotificationStatusBanner />
 
           <HeroProgress 
             currentDay={currentCycleDay}
