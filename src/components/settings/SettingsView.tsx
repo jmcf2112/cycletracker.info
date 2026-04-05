@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ArrowLeft, Settings, Download, Trash2, Bell, Sliders, Shield } from 'lucide-react';
+import { NotificationEmailVerification } from './NotificationEmailVerification';
 import { toast } from 'sonner';
 
 interface SettingsViewProps {
@@ -75,6 +76,7 @@ export function SettingsView({ settings, onUpdateSettings, onExport, onDeleteAll
               </div>
             </CardContent>
           </Card>
+          <NotificationEmailVerification />
           <Card>
             <CardHeader className="pb-2"><CardTitle className="text-base">Data Management</CardTitle></CardHeader>
             <CardContent className="space-y-3">
