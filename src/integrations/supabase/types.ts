@@ -65,6 +65,7 @@ export type Database = {
           daily_symptom_reminder: boolean
           daily_symptom_time: string
           email: string | null
+          email_verified: boolean
           enabled: boolean
           fertile_days_before: number
           fertile_reminder: boolean
@@ -76,12 +77,15 @@ export type Database = {
           period_reminder: boolean
           updated_at: string
           user_id: string
+          verification_code: string | null
+          verification_expires_at: string | null
         }
         Insert: {
           created_at?: string
           daily_symptom_reminder?: boolean
           daily_symptom_time?: string
           email?: string | null
+          email_verified?: boolean
           enabled?: boolean
           fertile_days_before?: number
           fertile_reminder?: boolean
@@ -93,12 +97,15 @@ export type Database = {
           period_reminder?: boolean
           updated_at?: string
           user_id: string
+          verification_code?: string | null
+          verification_expires_at?: string | null
         }
         Update: {
           created_at?: string
           daily_symptom_reminder?: boolean
           daily_symptom_time?: string
           email?: string | null
+          email_verified?: boolean
           enabled?: boolean
           fertile_days_before?: number
           fertile_reminder?: boolean
@@ -110,6 +117,8 @@ export type Database = {
           period_reminder?: boolean
           updated_at?: string
           user_id?: string
+          verification_code?: string | null
+          verification_expires_at?: string | null
         }
         Relationships: []
       }
