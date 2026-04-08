@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
 import { Dashboard } from '@/components/Dashboard';
 import { useCycleData } from '@/hooks/useCycleData';
-
+import { format } from 'date-fns';
 
 const Index = () => {
   const { settings, isLoading, updateSettings, addEntry } = useCycleData();

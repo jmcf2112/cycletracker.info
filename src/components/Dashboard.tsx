@@ -8,9 +8,8 @@ import { LogCycleDialog } from './LogCycleDialog';
 import { HistoryView } from './history/HistoryView';
 import { InsightsView } from './insights/InsightsView';
 import { SettingsView } from './settings/SettingsView';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Mail, MailX } from 'lucide-react';
 import { QuickActions } from './dashboard/QuickActions';
-import { NotificationStatusBanner } from './dashboard/NotificationStatusBanner';
 
 type View = 'calendar' | 'health' | 'insights' | 'settings';
 
@@ -69,7 +68,18 @@ export function Dashboard() {
             onOpenSettings={() => setView('settings')}
           />
 
-          <NotificationStatusBanner />
+          {/* Email notification status banner */}
+          <div className={`flex items-center gap-2 mt-3 px-3 py-2 rounded-lg text-xs font-medium ${
+            settings.notificationsEnabled 
+              ? 'bg-emerald-500/10 text-emerald-400' 
+              : 'bg-muted/30 text-muted-foreground'
+          }`}>
+            {settings.notificationsEnabled ? (
+              <><Mail className="w-3.5 h-3.5" /> Email notifications are active</>
+            ) : (
+              <><MailX className="w-3.5 h-3.5" /> Email notifications are off</>
+            )}
+          </div>
 
           <HeroProgress 
             currentDay={currentCycleDay}

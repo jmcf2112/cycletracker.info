@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ArrowLeft, Settings, Download, Trash2, Bell, Sliders, Shield } from 'lucide-react';
-import { NotificationEmailVerification } from './NotificationEmailVerification';
 import { toast } from 'sonner';
 
 interface SettingsViewProps {
@@ -76,7 +75,6 @@ export function SettingsView({ settings, onUpdateSettings, onExport, onDeleteAll
               </div>
             </CardContent>
           </Card>
-          <NotificationEmailVerification />
           <Card>
             <CardHeader className="pb-2"><CardTitle className="text-base">Data Management</CardTitle></CardHeader>
             <CardContent className="space-y-3">
@@ -88,7 +86,7 @@ export function SettingsView({ settings, onUpdateSettings, onExport, onDeleteAll
             <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Shield className="w-4 h-4 text-muted-foreground" />Privacy</CardTitle></CardHeader>
             <CardContent><p className="text-sm text-muted-foreground leading-relaxed">All your data is stored locally on this device. Nothing is sent to any server. You can export or delete your data at any time.</p></CardContent>
           </Card>
-          <p className="text-center text-xs text-muted-foreground py-4"><p className="text-center text-xs text-muted-foreground py-4">Cycle Tracker v2.0 • Made with care</p> • Made with care</p>
+          <p className="text-center text-xs text-muted-foreground py-4">Bloom v2.0 • Made with care</p>
         </div>
       </div>
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

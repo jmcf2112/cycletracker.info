@@ -28,20 +28,25 @@
   <meta name="twitter:title" content="Cycle tracker">
   <meta property="og:description" content="Cycle tracker provides tracking and symptom analysis for the female menstrual cycle in all its stages">
   <meta name="twitter:description" content="Cycle tracker provides tracking and symptom analysis for the female menstrual cycle in all its stages">
-  <script type="module" src="/src/main.tsx"></script>
+  <script type="module" crossorigin src="/assets/index-CYenZCOw.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-D81KfHId.css">
 </head>
 
   <body>
     <script>
-      // Sanitize localStorage: remove ALL corrupted entries that crash JSON.parse
+      // Sanitize localStorage: remove corrupted entries that crash JSON.parse
+      // Note: 'enc:' prefix is valid encrypted data and should NOT be removed
       (function() {
         try {
-          for (var i = localStorage.length - 1; i >= 0; i--) {
-            var key = localStorage.key(i);
-            if (!key) continue;
-            var val = localStorage.getItem(key);
-            if (val && val.indexOf('enc:') === 0) {
+          var key = 'cycle-tracker-v2';
+          var val = localStorage.getItem(key);
+          if (val) {
+            // Remove encrypted data (enc: prefix) – encryption layer has been removed
+            if (val.indexOf('enc:') === 0) {
               localStorage.removeItem(key);
+            } else {
+              // Try parsing – if it fails, remove the corrupted entry
+              try { JSON.parse(val); } catch(e) { localStorage.removeItem(key); }
             }
           }
         } catch(e) {}

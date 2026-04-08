@@ -31,9 +31,9 @@ export function TopNav({ activeTab, onTabSelect }: { activeTab: string, onTabSel
         </div>
         
         <div className="flex items-center justify-end gap-5 text-sm font-medium text-muted-foreground">
-          <button onClick={() => navigate('/support')} className="hover:text-primary transition-colors flex items-center gap-2" aria-label="Open donation page">
+          <button onClick={() => navigate('/support')} className="hover:text-primary transition-colors flex items-center gap-2" aria-label="Open support page">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
-            Donate
+            Support
           </button>
           <button className="hover:text-primary transition-colors"><Globe className="w-5 h-5" /></button>
           <button className="hover:text-primary transition-colors"><Moon className="w-5 h-5" /></button>
