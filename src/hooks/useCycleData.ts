@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { CycleData, CycleEntry, UserSettings } from '@/types/cycle';
 import { loadStoredDataAsync, saveDataAsync, deleteAllData } from '@/lib/storage';
 import { calculateStats, calculatePrediction, getCurrentCycleDay, isInPeriod } from '@/lib/predictions';
-import { sendNotificationEmail } from '@/lib/notifications';
 import { supabase } from '@/integrations/supabase/client';
 
 const defaultSettings: UserSettings = {
@@ -58,14 +57,17 @@ export function useCycleData() {
       return { ...prev, entries };
     });
 
-    // Send notification email for new cycle entry
+    // Send transactional email for new cycle entry
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user?.email) {
-        sendNotificationEmail(
-          user.email,
-          'Cycle Tracker: New Cycle Entry Logged',
-          `<p>A new cycle entry starting <strong>${newEntry.cycleStartDate}</strong> has been logged.</p>`,
-        );
+        supabase.functions.invoke('send-transactional-email', {
+          body: {
+            templateName: 'cycle-entry-logged',
+            recipientEmail: user.email,
+            idempotencyKey: `cycle-entry-${newEntry.id}`,
+            templateData: { cycleStartDate: newEntry.cycleStartDate },
+          },
+        });
       }
     });
 
