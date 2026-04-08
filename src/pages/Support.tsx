@@ -36,7 +36,7 @@ export default function Support() {
     if (!isSuccess || confettiRan.current) return;
     confettiRan.current = true;
     // simple CSS confetti via toast
-    toast.success('Thank you for your generous support! 🎉');
+    toast.success('Thank you for your generous donation! 🎉');
   }, [isSuccess]);
 
   const handleTip = async (tier: string) => {
