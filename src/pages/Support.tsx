@@ -84,7 +84,7 @@ export default function Support() {
             </div>
             <CardTitle className="text-2xl">Thank You!</CardTitle>
             <CardDescription className="text-base">
-              Your support means the world. You're helping keep Cycle Tracker free and accessible for everyone.
+              Your donation means the world. You're helping keep Cycle Tracker free and accessible for everyone.
             </CardDescription>
           </CardHeader>
           <CardContent>
