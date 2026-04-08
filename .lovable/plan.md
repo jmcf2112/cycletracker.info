@@ -1,21 +1,25 @@
 
 
-## Plan: Remove Google and Apple OAuth from Auth Page
+# Add Google & Apple OAuth to Auth Page
 
-### Problem
-The Auth.tsx file has broken JSX — there's an orphaned `</>` closing fragment tag (line 117) and `)}` (line 118) without a matching opening fragment or conditional block. This is causing the build errors. The OAuth buttons and separator also need to be fully removed.
+## Overview
+Add Google and Apple sign-in buttons to the existing Auth card, using the Lovable Cloud managed OAuth via `lovable.auth.signInWithOAuth()`.
 
-### Changes
+## Changes
 
-**File: `src/pages/Auth.tsx`**
+### `src/pages/Auth.tsx`
+1. Import `lovable` from `@/integrations/lovable/index`
+2. Add a `handleOAuthSignIn` function for Google/Apple that calls `lovable.auth.signInWithOAuth(provider, { redirect_uri: window.location.origin })`
+3. Add two OAuth buttons (Google and Apple) with recognizable icons below the email form, separated by a "or continue with" divider
+4. Show OAuth buttons on both sign-in and sign-up views (hide during forgot-password flow)
+5. Handle loading state and error toasts for OAuth attempts
 
-1. Remove the `lovable` import (line 3) and `Separator` import (line 9)
-2. Remove the `handleOAuth` function (lines 55-60)
-3. Remove the entire OAuth section: Google button, Apple button, separator, and the broken fragment/conditional closing tags (lines 103-118)
-4. Keep only the email/password form, forgot password link, and sign-in/sign-up toggle
+### Visual Layout
+- After the email/password form and before the sign-in/sign-up toggle text
+- A horizontal divider with "or" text
+- Two full-width buttons stacked: "Continue with Google" and "Continue with Apple"
+- Inline SVG icons for Google (colored G logo) and Apple (apple icon)
 
-### Result
-- Clean email-only authentication (sign in, sign up, forgot password)
-- All build errors resolved
-- No more references to `@lovable.dev/cloud-auth-js`
+### Memory Update
+Update auth memory to reflect that Google and Apple OAuth are now re-enabled via Lovable Cloud managed OAuth.
 
