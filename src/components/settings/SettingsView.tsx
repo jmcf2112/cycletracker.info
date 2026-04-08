@@ -86,7 +86,7 @@ export function SettingsView({ settings, onUpdateSettings, onExport, onDeleteAll
             <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Shield className="w-4 h-4 text-muted-foreground" />Privacy</CardTitle></CardHeader>
             <CardContent><p className="text-sm text-muted-foreground leading-relaxed">All your data is stored locally on this device. Nothing is sent to any server. You can export or delete your data at any time.</p></CardContent>
           </Card>
-          <p className="text-center text-xs text-muted-foreground py-4">Bloom v2.0 • Made with care</p>
+          <p className="text-center text-xs text-muted-foreground py-4">Cycle Tracker v2.0 • Made with care</p>
         </div>
       </div>
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
