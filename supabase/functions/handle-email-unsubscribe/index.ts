@@ -84,6 +84,13 @@ Deno.serve(async (req) => {
     return jsonResponse({ valid: false, reason: 'already_unsubscribed' })
   }
 
+  // Enforce 7-day token expiry
+  const tokenAge = Date.now() - new Date(tokenRecord.created_at).getTime()
+  const MAX_TOKEN_AGE_MS = 7 * 24 * 60 * 60 * 1000 // 7 days
+  if (tokenAge > MAX_TOKEN_AGE_MS) {
+    return jsonResponse({ error: 'Token has expired' }, 410)
+  }
+
   // GET: Validate token (the app's unsubscribe page calls this on load)
   if (req.method === 'GET') {
     return jsonResponse({ valid: true })
