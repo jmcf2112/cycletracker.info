@@ -115,7 +115,7 @@ export default function Support() {
           <div className="mx-auto mb-4 w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
             <Heart className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Support Cycle Tracker</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Donate to Cycle Tracker</h1>
           <p className="text-muted-foreground max-w-md mx-auto">
             Cycle Tracker is a free public-good project. Tips help cover hosting, development and keep the service running.
           </p>
