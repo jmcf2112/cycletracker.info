@@ -156,7 +156,7 @@ export default function Support() {
                   type="number"
                   min={1}
                   max={500}
-                  placeholder="1"
+                  placeholder="10"
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
                   className="pl-7"
