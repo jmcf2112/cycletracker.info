@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import { Plus, History, BarChart3, Settings } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { sendNotificationEmail } from '@/lib/notifications';
-import { toast } from 'sonner';
 
 interface QuickActionsProps {
   onLogCycle: () => void;
@@ -16,11 +15,7 @@ export function QuickActions({ onLogCycle, onViewHistory, onViewInsights, onOpen
 
   const notify = async (action: string) => {
     if (!user?.email) return;
-    await sendNotificationEmail(
-      user.email,
-      `Cycle Tracker: ${action}`,
-      `<p>You used the <strong>${action}</strong> feature in Cycle Tracker.</p>`,
-    );
+    await sendNotificationEmail(user.email, '', '', action);
   };
 
   return (
