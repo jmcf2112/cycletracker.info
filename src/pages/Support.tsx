@@ -11,7 +11,7 @@ const TIERS = [
   {
     id: 'small',
     icon: Coffee,
-    label: 'Buy a Coffee',
+    label: 'Support Development',
     amount: '$3',
     description: 'A small gesture that keeps the lights on.',
   },
