@@ -1,3 +1,4 @@
+// Support page – tip jar for Cycle Tracker
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Heart, Coffee, ArrowLeft, Sparkles } from 'lucide-react';
