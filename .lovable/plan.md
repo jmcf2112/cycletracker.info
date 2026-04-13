@@ -1,57 +1,35 @@
-## Investigation Findings
 
-### Issue 1: Quick Actions toolbar position
+Goal: fix the Support page so the custom amount input shows placeholder "1" in the live preview instead of the stale "10".
 
-The Quick Actions toolbar **is** at the top of the dashboard content area in the code (line 64-69 in Dashboard.tsx, rendered before HeroProgress). However, looking at the code, the QuickActions component renders as a `grid grid-cols-2` of buttons — it's positioned correctly in the DOM order but may not visually appear "at the top of the page" because it sits below the TopNav. The code change from the previous message was applied correctly. If the user expected it above the TopNav header itself, that's a different placement than what was implemented.  
-  
-**Diagnosis**: The QuickActions IS rendered before HeroProgress (lines 64-69). It's at the top of the content area, below the TopNav. If the user wants it literally at the very top of the page (above or inside the TopNav), that requires a different approach.
+What I found
+- In the current source, `src/pages/Support.tsx` already has:
+  - `label: 'Support Development'`
+  - `placeholder="1"`
+- There are no remaining `placeholder="10"` matches in `src`.
+- The `/support` route points directly to `src/pages/Support.tsx`, so the source is correct.
+- The likely issue is stale built output in `public/assets/Support-CSikK-Om.js` / preview caching, not the React source itself.
 
-### Issue 2: OAuth disappeared from login/signup pages
+Implementation plan
+1. Re-apply the placeholder update in `src/pages/Support.tsx` and verify the exact JSX block for the custom amount input.
+2. Refresh the generated preview/build output so the `/support` page stops serving the stale asset that still shows `10`.
+3. Verify the support route is rendering the updated bundle and that both edits are visible:
+   - “Support Development”
+   - custom amount placeholder `1`
+4. If the stale asset persists, trace whether the preview is loading an older chunk or cached deployment artifact and force regeneration of the support chunk.
+5. Do a quick end-to-end visual check on `/support` in the preview after regeneration.
 
-**There are no login/signup pages in the codebase.** The project has:
+Technical details
+- Source of truth: `src/pages/Support.tsx`
+- Route mapping confirmed in `src/App.tsx`
+- Suspected stale compiled asset: `public/assets/Support-CSikK-Om.js`
 
-- No Auth page (`/auth`, `/login`, `/signup` — none exist)
-- No `useAuth` hook
-- No `AuthProvider` context
-- No `ProtectedRoute` or `PublicRoute` components
-- No `src/integrations/lovable/` directory (no cloud auth module)
-- No references to `signInWithOAuth`, `lovable.auth`, or any OAuth flow
+Expected outcome
+- The Support page input placeholder displays `1`
+- The first tip tier reads `Support Development`
+- The preview matches the current source code
 
-The memory file mentions an auth system with `AuthProvider`, `ProtectedRoute`, Google/Apple OAuth, and a profile page at `/profile`, but **none of this code exists in the current codebase**. The authentication system appears to have been completely removed or lost at some point.
-
-The App.tsx routes are only: `/` (Index), `/support` (Support), and `*` (NotFound). The Index page shows onboarding or the Dashboard directly — no auth gate.
-
-## Recommended Plan
-
-### Step 1: Confirm Quick Actions placement intent
-
-Clarify whether the user wants QuickActions above the TopNav header, or if the current position (top of content, below nav) is acceptable.  
-  
-"Move the Quick Actions toolbar directly above the Cycle Phase Timeline."
-
-### Step 2: Rebuild authentication system
-
-Since auth is completely missing, we need to recreate:
-
-1. **Install `@lovable.dev/cloud-auth-js**` and use the Configure Social Login tool to scaffold the lovable auth module
-2. **Create `src/hooks/useAuth.tsx**` — AuthProvider context wrapping Supabase `onAuthStateChange` + `getSession`
-3. **Create `src/pages/Auth.tsx**` — Login/signup page with email+password forms and Google/Apple OAuth buttons using `lovable.auth.signInWithOAuth()`
-4. **Create `src/components/ProtectedRoute.tsx**` and `src/components/PublicRoute.tsx`** — route guards
-5. **Create `src/pages/Profile.tsx**` and `src/pages/ResetPassword.tsx`** — account management
-6. **Update `src/App.tsx**` — wrap with AuthProvider, add `/auth`, `/profile`, `/reset-password` routes with appropriate guards
-7. **Verify profiles table exists** in the database (check schema)
-
-### Files to create
-
-- `src/hooks/useAuth.tsx`
-- `src/pages/Auth.tsx`
-- `src/pages/Profile.tsx`
-- `src/pages/ResetPassword.tsx`
-- `src/components/ProtectedRoute.tsx`
-- `src/components/PublicRoute.tsx`
-
-### Files to modify
-
-- `src/App.tsx` — add AuthProvider, new routes
-- `src/components/Dashboard.tsx` — optionally move QuickActions placement
-- `src/components/dashboard/TopNav.tsx` — wire Sign Out to real `signOut()`
+<lov-actions>
+<lov-suggestion message="Test the support page end-to-end in the preview and confirm the placeholder now shows 1 and the Support Development label appears correctly.">Verify that it works</lov-suggestion>
+<lov-suggestion message="Force-refresh the support page build output and clear any stale preview asset so the updated placeholder and label render correctly.">Refresh the preview build</lov-suggestion>
+<lov-suggestion message="Add stronger validation and inline error messaging to the custom tip amount input for values outside $1 to $500.">Improve tip validation</lov-suggestion>
+</lov-actions>
