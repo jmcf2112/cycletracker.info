@@ -36,10 +36,10 @@ export default function Support() {
     if (!isSuccess || confettiRan.current) return;
     confettiRan.current = true;
     // simple CSS confetti via toast
-    toast.success('Thank you for your generous support! 🎉');
+    toast.success('Thank you for your generous donation! 🎉');
   }, [isSuccess]);
 
-  const handleTip = async (tier: string) => {
+  const handleDonation = async (tier: string) => {
     setLoading(tier);
     try {
       const { data, error } = await supabase.functions.invoke('create-payment', {
@@ -84,7 +84,7 @@ export default function Support() {
             </div>
             <CardTitle className="text-2xl">Thank You!</CardTitle>
             <CardDescription className="text-base">
-              Your support means the world. You're helping keep Cycle Tracker free and accessible for everyone.
+              Your donation means the world. You're helping keep Cycle Tracker free and accessible for everyone.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -117,7 +117,7 @@ export default function Support() {
           </div>
           <h1 className="text-3xl font-bold text-foreground mb-2">Donate to Cycle Tracker</h1>
           <p className="text-muted-foreground max-w-md mx-auto">
-            Cycle Tracker is a free public-good project. Tips help cover hosting, development and keep the service running.
+            Cycle Tracker is a free public-good project. Donations help cover hosting, development and keep the service running.
           </p>
         </div>
 
@@ -127,7 +127,7 @@ export default function Support() {
             <Card
               key={t.id}
               className="cursor-pointer hover:border-primary/50 transition-colors"
-              onClick={() => !loading && handleTip(t.id)}
+              onClick={() => !loading && handleDonation(t.id)}
             >
               <CardContent className="flex items-center gap-4 p-5">
                 <div className="p-2.5 rounded-xl bg-primary/10 shrink-0">
@@ -160,11 +160,11 @@ export default function Support() {
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
                   className="pl-7"
-                  aria-label="Enter a custom tip amount in dollars"
+                  aria-label="Enter a custom donation amount in dollars"
                 />
               </div>
-              <Button onClick={handleCustom} disabled={!!loading} aria-label="Send custom tip">
-                {loading === 'custom' ? '...' : 'Tip'}
+              <Button onClick={handleCustom} disabled={!!loading} aria-label="Send custom donation">
+                {loading === 'custom' ? '...' : 'Donate'}
               </Button>
             </div>
           </CardContent>
