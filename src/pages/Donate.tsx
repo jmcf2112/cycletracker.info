@@ -24,7 +24,7 @@ const TIERS = [
   },
 ];
 
-export default function Support() {
+export default function Donate() {
   const [searchParams] = useSearchParams();
   const isSuccess = searchParams.get('success') === 'true';
   const [loading, setLoading] = useState<string | null>(null);

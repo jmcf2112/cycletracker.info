@@ -11,7 +11,7 @@ import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
-import Support from "./pages/Support";
+import Donate from "./pages/Donate";
 import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
@@ -28,7 +28,8 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-            <Route path="/support" element={<Support />} />
+            <Route path="/donate" element={<Donate />} />
+            <Route path="/support" element={<Donate />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
