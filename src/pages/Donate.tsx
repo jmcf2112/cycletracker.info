@@ -164,7 +164,7 @@ export default function Donate() {
                 />
               </div>
               <Button onClick={handleCustom} disabled={!!loading} aria-label="Send custom donation">
-                {loading === 'custom' ? '...' : 'Donate'}
+                {loading === 'custom' ? '...' : '​Donate'}
               </Button>
             </div>
           </CardContent>
