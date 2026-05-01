@@ -46,7 +46,7 @@ export default function Donate() {
         body: { tier },
       });
       if (error) throw error;
-      if (data?.url) window.open(data.url, '_blank');
+      if (data?.url) window.location.href = data.url;
     } catch (e: any) {
       toast.error(e.message || 'Something went wrong');
     } finally {
@@ -66,7 +66,7 @@ export default function Donate() {
         body: { customAmount: val },
       });
       if (error) throw error;
-      if (data?.url) window.open(data.url, '_blank');
+      if (data?.url) window.location.href = data.url;
     } catch (e: any) {
       toast.error(e.message || 'Something went wrong');
     } finally {
