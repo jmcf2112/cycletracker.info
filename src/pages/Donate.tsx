@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Heart, Coffee, ArrowLeft, Sparkles } from 'lucide-react';
+import { Heart, Coffee, ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -123,26 +123,51 @@ export default function Donate() {
 
         {/* Preset tiers */}
         <div className="grid gap-4 sm:grid-cols-2 mb-6">
-          {TIERS.map((t) => (
-            <Card
-              key={t.id}
-              className="cursor-pointer hover:border-primary/50 transition-colors"
-              onClick={() => !loading && handleDonation(t.id)}
-            >
-              <CardContent className="flex items-center gap-4 p-5">
-                <div className="p-2.5 rounded-xl bg-primary/10 shrink-0">
-                  <t.icon className="h-5 w-5 text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-foreground">{t.label}</p>
-                  <p className="text-sm text-muted-foreground">{t.description}</p>
-                </div>
-                <span className="text-lg font-bold text-foreground shrink-0">
-                  {loading === t.id ? '...' : t.amount}
-                </span>
-              </CardContent>
-            </Card>
-          ))}
+          {TIERS.map((t) => {
+            const isLoading = loading === t.id;
+            const isDisabled = !!loading;
+            return (
+              <Card
+                key={t.id}
+                role="button"
+                tabIndex={isDisabled ? -1 : 0}
+                aria-disabled={isDisabled}
+                aria-busy={isLoading}
+                aria-label={`Donate ${t.amount} - ${t.label}`}
+                className={`transition-colors ${
+                  isDisabled
+                    ? 'opacity-60 cursor-not-allowed'
+                    : 'cursor-pointer hover:border-primary/50'
+                }`}
+                onClick={() => !isDisabled && handleDonation(t.id)}
+                onKeyDown={(e) => {
+                  if (!isDisabled && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault();
+                    handleDonation(t.id);
+                  }
+                }}
+              >
+                <CardContent className="flex items-center gap-4 p-5">
+                  <div className="p-2.5 rounded-xl bg-primary/10 shrink-0">
+                    <t.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-foreground">{t.label}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {isLoading ? 'Redirecting to Stripe…' : t.description}
+                    </p>
+                  </div>
+                  <span className="text-lg font-bold text-foreground shrink-0">
+                    {isLoading ? (
+                      <Loader2 className="h-5 w-5 animate-spin text-primary" aria-hidden="true" />
+                    ) : (
+                      t.amount
+                    )}
+                  </span>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Custom amount */}
@@ -160,11 +185,25 @@ export default function Donate() {
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
                   className="pl-7"
+                  disabled={!!loading}
                   aria-label="Enter a custom donation amount in dollars"
                 />
               </div>
-              <Button onClick={handleCustom} disabled={!!loading} aria-label="Send custom donation">
-                {loading === 'custom' ? '...' : '​Donate'}
+              <Button
+                onClick={handleCustom}
+                disabled={!!loading}
+                aria-busy={loading === 'custom'}
+                aria-label="Send custom donation"
+                className="min-w-[110px]"
+              >
+                {loading === 'custom' ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
+                    Redirecting…
+                  </>
+                ) : (
+                  '​Donate'
+                )}
               </Button>
             </div>
           </CardContent>
