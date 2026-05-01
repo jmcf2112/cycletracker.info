@@ -41,7 +41,7 @@ serve(async (req) => {
         {
           price_data: {
             currency: "usd",
-            product_data: { name: "Custom Tip" },
+            product_data: { name: "Custom Donation" },
             unit_amount: cents,
           },
           quantity: 1,
@@ -67,8 +67,8 @@ serve(async (req) => {
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       line_items: lineItems,
       mode: "payment",
-      success_url: `${req.headers.get("origin")}/support?success=true`,
-      cancel_url: `${req.headers.get("origin")}/support`,
+      success_url: `${req.headers.get("origin")}/donate?success=true`,
+      cancel_url: `${req.headers.get("origin")}/donate`,
     };
 
     if (customerEmail) {
