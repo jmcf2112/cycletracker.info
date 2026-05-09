@@ -18,7 +18,7 @@ const TIERS = [
   {
     id: 'medium',
     icon: Heart,
-    label: 'Show Some Love',
+    label: 'Small',
     amount: '$5',
     description: 'Help keep the app free for everyone.',
   },
