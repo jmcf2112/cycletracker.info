@@ -98,10 +98,16 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("create-payment error:", error);
+    const isUserError =
+      error instanceof Error &&
+      (error.message.includes("between $1") || error.message.includes("Invalid tier"));
+    const message = isUserError
+      ? (error as Error).message
+      : "Payment setup failed. Please try again.";
     return new Response(JSON.stringify({ error: message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
+      status: isUserError ? 400 : 500,
     });
   }
 });

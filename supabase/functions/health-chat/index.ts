@@ -90,7 +90,14 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const userId = claimsData.claims.sub as string;
+    const claims = claimsData.claims as { sub?: string; role?: string };
+    if (!claims.sub || claims.role !== "authenticated") {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const userId = claims.sub;
 
     // --- Rate limit ---
     try {
