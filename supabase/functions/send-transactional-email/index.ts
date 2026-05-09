@@ -147,6 +147,20 @@ Deno.serve(async (req) => {
     )
   }
 
+  // Restrict recipient to the authenticated caller's own email address.
+  // Templates with a fixed `to` (e.g., site-owner notifications) are exempt.
+  if (!template.to) {
+    if (!callerEmail || effectiveRecipient.toLowerCase().trim() !== callerEmail) {
+      return new Response(
+        JSON.stringify({ error: 'Recipient must be your own email address' }),
+        {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+  }
+
   // Create Supabase client with service role (bypasses RLS)
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
