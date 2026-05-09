@@ -42,6 +42,31 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
+
+  // Require an authenticated end-user JWT (not the anon key) to prevent
+  // unauthenticated callers from using this function as an open email relay.
+  const authHeader = req.headers.get('Authorization')
+  if (!authHeader?.startsWith('Bearer ') || !supabaseUrl || !supabaseAnonKey) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+  const token = authHeader.replace('Bearer ', '')
+  const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: authHeader } },
+  })
+  const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token)
+  const claims = claimsData?.claims as { sub?: string; role?: string; email?: string } | undefined
+  if (claimsError || !claims || claims.role !== 'authenticated' || !claims.sub) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+  const callerUserId = claims.sub
+  const callerEmail = claims.email?.toLowerCase().trim()
 
   if (!supabaseUrl || !supabaseServiceKey) {
     console.error('Missing required environment variables')
