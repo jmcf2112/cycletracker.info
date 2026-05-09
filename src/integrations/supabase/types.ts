@@ -77,8 +77,6 @@ export type Database = {
           period_reminder: boolean
           updated_at: string
           user_id: string
-          verification_code: string | null
-          verification_expires_at: string | null
         }
         Insert: {
           created_at?: string
@@ -97,8 +95,6 @@ export type Database = {
           period_reminder?: boolean
           updated_at?: string
           user_id: string
-          verification_code?: string | null
-          verification_expires_at?: string | null
         }
         Update: {
           created_at?: string
@@ -117,8 +113,6 @@ export type Database = {
           period_reminder?: boolean
           updated_at?: string
           user_id?: string
-          verification_code?: string | null
-          verification_expires_at?: string | null
         }
         Relationships: []
       }
