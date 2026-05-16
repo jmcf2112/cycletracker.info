@@ -1,23 +1,19 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { buildCorsHeaders, handlePreflight } from '../_shared/cors.ts'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-}
-
-function jsonResponse(data: Record<string, unknown>, status = 200): Response {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-  })
+function makeJsonResponse(corsHeaders: Record<string, string>) {
+  return (data: Record<string, unknown>, status = 200): Response =>
+    new Response(JSON.stringify(data), {
+      status,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
 }
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
-  }
+  const pre = handlePreflight(req)
+  if (pre) return pre
+  const corsHeaders = buildCorsHeaders(req)
+  const jsonResponse = makeJsonResponse(corsHeaders)
 
   if (req.method !== 'GET' && req.method !== 'POST') {
     return jsonResponse({ error: 'Method not allowed' }, 405)

@@ -1,12 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { buildCorsHeaders, handlePreflight, ALLOWED_ORIGINS } from "../_shared/cors.ts";
 
 const TIERS: Record<string, string> = {
   small: "price_1T1FQG52JxoxrqKr9DY03od4",   // $3
@@ -14,9 +9,10 @@ const TIERS: Record<string, string> = {
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const pre = handlePreflight(req);
+  if (pre) return pre;
+  const corsHeaders = buildCorsHeaders(req);
+
 
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
@@ -64,12 +60,6 @@ serve(async (req) => {
       customerEmail = data.user?.email ?? undefined;
     }
 
-    const ALLOWED_ORIGINS = new Set([
-      "https://www.cycletracker.info",
-      "https://cycletracker.info",
-      "https://cycletracker-v2.lovable.app",
-      "https://id-preview--0a94c746-ff22-4c89-96bd-70ea14bc162e.lovable.app",
-    ]);
     const requestOrigin = req.headers.get("origin") ?? "";
     const baseUrl = ALLOWED_ORIGINS.has(requestOrigin)
       ? requestOrigin

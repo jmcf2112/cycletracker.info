@@ -1,9 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+import { buildCorsHeaders, handlePreflight } from '../_shared/cors.ts'
 
 // In-memory per-user rate limiter (best-effort; resets on cold start)
 const rateMap = new Map<string, { count: number; windowStart: number }>()
@@ -33,9 +29,10 @@ function sanitizeHtml(html: string): string {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
-  }
+  const pre = handlePreflight(req)
+  if (pre) return pre
+  const corsHeaders = buildCorsHeaders(req)
+
 
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {

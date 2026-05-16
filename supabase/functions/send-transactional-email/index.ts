@@ -15,11 +15,7 @@ const SENDER_DOMAIN = "notify.www.cycletracker.info"
 // even though actual sending uses the subdomain above.
 const FROM_DOMAIN = "www.cycletracker.info"
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-}
+import { buildCorsHeaders, handlePreflight } from '../_shared/cors.ts'
 
 // Generate a cryptographically random 32-byte hex token
 function generateToken(): string {
@@ -35,10 +31,10 @@ function generateToken(): string {
 // reaches this code. No in-function auth check is needed.
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
-  }
+  const pre = handlePreflight(req)
+  if (pre) return pre
+  const corsHeaders = buildCorsHeaders(req)
+
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
