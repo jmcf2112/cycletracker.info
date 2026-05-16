@@ -10,10 +10,10 @@ function makeJsonResponse(corsHeaders: Record<string, string>) {
 }
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
-  }
+  const pre = handlePreflight(req)
+  if (pre) return pre
+  const corsHeaders = buildCorsHeaders(req)
+  const jsonResponse = makeJsonResponse(corsHeaders)
 
   if (req.method !== 'GET' && req.method !== 'POST') {
     return jsonResponse({ error: 'Method not allowed' }, 405)
