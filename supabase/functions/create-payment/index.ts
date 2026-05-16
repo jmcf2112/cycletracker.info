@@ -60,12 +60,6 @@ serve(async (req) => {
       customerEmail = data.user?.email ?? undefined;
     }
 
-    const ALLOWED_ORIGINS = new Set([
-      "https://www.cycletracker.info",
-      "https://cycletracker.info",
-      "https://cycletracker-v2.lovable.app",
-      "https://id-preview--0a94c746-ff22-4c89-96bd-70ea14bc162e.lovable.app",
-    ]);
     const requestOrigin = req.headers.get("origin") ?? "";
     const baseUrl = ALLOWED_ORIGINS.has(requestOrigin)
       ? requestOrigin
