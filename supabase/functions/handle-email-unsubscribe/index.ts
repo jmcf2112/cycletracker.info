@@ -1,11 +1,12 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { buildCorsHeaders, handlePreflight } from '../_shared/cors.ts'
 
-function jsonResponse(data: Record<string, unknown>, status = 200): Response {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-  })
+function makeJsonResponse(corsHeaders: Record<string, string>) {
+  return (data: Record<string, unknown>, status = 200): Response =>
+    new Response(JSON.stringify(data), {
+      status,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
 }
 
 Deno.serve(async (req) => {
