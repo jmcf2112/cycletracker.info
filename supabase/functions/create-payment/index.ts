@@ -9,9 +9,10 @@ const TIERS: Record<string, string> = {
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const pre = handlePreflight(req);
+  if (pre) return pre;
+  const corsHeaders = buildCorsHeaders(req);
+
 
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
