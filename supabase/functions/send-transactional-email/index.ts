@@ -15,11 +15,7 @@ const SENDER_DOMAIN = "notify.www.cycletracker.info"
 // even though actual sending uses the subdomain above.
 const FROM_DOMAIN = "www.cycletracker.info"
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-}
+import { buildCorsHeaders, handlePreflight } from '../_shared/cors.ts'
 
 // Generate a cryptographically random 32-byte hex token
 function generateToken(): string {
