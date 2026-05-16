@@ -68,7 +68,11 @@ for (const fn of BROWSER_FUNCTIONS) {
         origin,
         `${fn} <- ${origin}: expected ACAO=${origin}, got ${acao}`,
       );
-      assertEquals(res.headers.get("vary"), "Origin");
+      const vary = res.headers.get("vary") ?? "";
+      assert(
+        vary.split(",").map((s) => s.trim()).includes("Origin"),
+        `${fn} <- ${origin}: Vary must include Origin, got "${vary}"`,
+      );
     }
   });
 
