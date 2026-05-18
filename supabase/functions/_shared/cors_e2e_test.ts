@@ -107,6 +107,38 @@ for (const fn of BROWSER_FUNCTIONS) {
     }
   });
 
+  Deno.test(`E2E ${fn}: header matching is case-insensitive`, async () => {
+    const origin = ALLOWED_ORIGINS[0];
+    const mixedCaseVariants = [
+      "Authorization, Content-Type",
+      "AUTHORIZATION, CONTENT-TYPE",
+      "authorization, Content-Type",
+      "aUtHoRiZaTiOn, CoNtEnT-tYpE",
+    ];
+    for (const variant of mixedCaseVariants) {
+      const res = await preflight(fn, origin, variant);
+      await res.body?.cancel();
+      assert(
+        res.status === 200 || res.status === 204,
+        `${fn} ACRH="${variant}": expected 2xx, got ${res.status}`,
+      );
+      const acao = res.headers.get("access-control-allow-origin");
+      assertEquals(
+        acao,
+        origin,
+        `${fn} ACRH="${variant}": expected ACAO=${origin}, got ${acao}`,
+      );
+      const acah = res.headers.get("access-control-allow-headers") ?? "";
+      const allowed = new Set(
+        acah.split(",").map((s) => s.trim().toLowerCase()),
+      );
+      assert(
+        allowed.has("authorization") && allowed.has("content-type"),
+        `${fn} ACRH="${variant}": ACAH must include authorization & content-type (case-insensitive), got "${acah}"`,
+      );
+    }
+  });
+
   Deno.test(`E2E ${fn}: missing Origin (server-to-server) preflight succeeds`, async () => {
     const res = await fetch(`${FUNCTIONS_BASE}/${fn}`, {
       method: "OPTIONS",
