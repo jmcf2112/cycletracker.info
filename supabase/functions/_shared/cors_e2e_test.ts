@@ -139,6 +139,47 @@ for (const fn of BROWSER_FUNCTIONS) {
     }
   });
 
+  Deno.test(`E2E ${fn}: ACAH does not echo unknown/disallowed request headers`, async () => {
+    const origin = ALLOWED_ORIGINS[0];
+    // Client requests a mix of allowed headers + disallowed ones in various casings.
+    const disallowedNames = [
+      "X-Evil-Header",
+      "x-admin-override",
+      "X-FORWARDED-FOR",
+      "Cookie",
+      "sEt-CoOkIe",
+      "X-Custom-Auth",
+    ];
+    const requested = ["Authorization", "Content-Type", ...disallowedNames].join(", ");
+    const res = await preflight(fn, origin, requested);
+    await res.body?.cancel();
+    assert(
+      res.status === 200 || res.status === 204,
+      `${fn}: expected 2xx, got ${res.status}`,
+    );
+    const acah = res.headers.get("access-control-allow-headers") ?? "";
+    const allowed = new Set(
+      acah.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean),
+    );
+    // Allowed headers must still be present
+    assert(
+      allowed.has("authorization") && allowed.has("content-type"),
+      `${fn}: ACAH must still include authorization & content-type, got "${acah}"`,
+    );
+    // None of the disallowed names (case-insensitive) should be granted
+    for (const bad of disallowedNames) {
+      assert(
+        !allowed.has(bad.toLowerCase()),
+        `${fn}: ACAH must NOT include "${bad}" (case-insensitive). ACAH="${acah}"`,
+      );
+    }
+    // Wildcard would also be a leak — explicitly disallow
+    assert(
+      !allowed.has("*"),
+      `${fn}: ACAH must not be wildcard "*". ACAH="${acah}"`,
+    );
+  });
+
   Deno.test(`E2E ${fn}: missing Origin (server-to-server) preflight succeeds`, async () => {
     const res = await fetch(`${FUNCTIONS_BASE}/${fn}`, {
       method: "OPTIONS",
