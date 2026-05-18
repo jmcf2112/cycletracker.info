@@ -42,13 +42,17 @@ const DISALLOWED_ORIGINS = [
   "https://notcycletracker.info",
 ];
 
-async function preflight(fn: string, origin: string): Promise<Response> {
+async function preflight(
+  fn: string,
+  origin: string,
+  requestHeaders = "authorization, content-type",
+): Promise<Response> {
   return await fetch(`${FUNCTIONS_BASE}/${fn}`, {
     method: "OPTIONS",
     headers: {
       Origin: origin,
       "Access-Control-Request-Method": "POST",
-      "Access-Control-Request-Headers": "authorization, content-type",
+      "Access-Control-Request-Headers": requestHeaders,
     },
   });
 }
