@@ -73,6 +73,14 @@ for (const fn of BROWSER_FUNCTIONS) {
         vary.split(",").map((s) => s.trim()).includes("Origin"),
         `${fn} <- ${origin}: Vary must include Origin, got "${vary}"`,
       );
+      const acah = res.headers.get("access-control-allow-headers") ?? "";
+      const allowedHeaderSet = new Set(
+        acah.split(",").map((s) => s.trim().toLowerCase()),
+      );
+      assert(
+        allowedHeaderSet.has("authorization") && allowedHeaderSet.has("content-type"),
+        `${fn} <- ${origin}: ACAH must include authorization and content-type, got "${acah}"`,
+      );
     }
   });
 
